@@ -1,25 +1,18 @@
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
+import useSWR from "swr";
 
 export default function Header({ home }) {
   const [pathname, setPathname] = useState("");
-  const [newSlug, setNewSlug] = useState("");
   const { data } = useSWR("/api/auth");
-  const { data: content } = useSWR(
-    data && data.isAuthorized ? "/api/content" : null
+  const { data: newSlug } = useSWR(
+    home && data && data.isAuthorized ? "/api/new-slug" : null
   );
 
   useEffect(() => {
     setPathname(location.pathname);
   }, []);
-
-  useEffect(() => {
-    if (content) {
-      setNewSlug(content.newSlug);
-    }
-  }, [content]);
 
   return (
     <div className="flex items-center justify-between mb-2 pt-2 pb-3">
@@ -69,19 +62,23 @@ export default function Header({ home }) {
           >
             Войти
           </a>
-        ) : home ? (
-          <Link href={`/${newSlug}`}>
-            <a>
-              <PlusIcon className="w-6" />
-            </a>
-          </Link>
         ) : (
-          <Link href="/">
-            <a>
-              <XMarkIcon className="w-6" />
-            </a>
-          </Link>
+          home &&
+          newSlug && (
+            <Link href={`/${newSlug.newSlug}`}>
+              <a>
+                <PlusIcon className="w-6" />
+              </a>
+            </Link>
+          )
         ))}
+      {!home && (
+        <Link href="/">
+          <a>
+            <XMarkIcon className="w-6" />
+          </a>
+        </Link>
+      )}
     </div>
   );
 }

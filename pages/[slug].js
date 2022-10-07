@@ -29,7 +29,7 @@ export default function Slug() {
     }
   }, [note]);
 
-  if (!data) {
+  if (!data || !data.isAuthorized) {
     return null;
   }
 
