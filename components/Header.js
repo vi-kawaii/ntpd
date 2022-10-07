@@ -69,7 +69,7 @@ export default function Header({ home, slug }) {
         (!data.isAuthorized ? (
           <a
             href={`//oauth.vk.com/authorize?client_id=51443585&display=page&response_type=token&scope=offline&v=5.131&redirect_uri=https://ntpd.vercel.app/callback&state=${pathname}`}
-            className="bg-blue-500 rounded-lg px-3 py-1"
+            className="bg-blue-500 rounded-lg px-3 py-1 ml-auto"
           >
             Войти
           </a>
@@ -85,12 +85,12 @@ export default function Header({ home, slug }) {
         ))}
       {!home && (
         <div className="flex">
-          {slug && <button onClick={share} className="mr-4">
-            <ShareIcon className="w-6" />
+          {slug && <button onClick={share}>
+            <ShareIcon className="w-5" />
           </button>}
           <Link href="/">
             <a>
-              <XMarkIcon className="w-6" />
+              <XMarkIcon className="w-6 ml-4" />
             </a>
           </Link>
         </div>

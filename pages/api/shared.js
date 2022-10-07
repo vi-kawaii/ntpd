@@ -8,6 +8,7 @@ export default async function handler(req, res) {
   const user = await vk.api.users.get({
     user_ids: [req.query.user_id],
     fields: ["photo_50"],
+    lang: "ru"
   });
 
   const text = (

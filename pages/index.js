@@ -19,7 +19,7 @@ export default function Home() {
         <Header home />
         <div className="grid sm:grid-cols-2 gap-2">
           {data && !data.isAuthorized && (
-            <div className="flex flex-col items-center justify-center h-[calc(100vh-180px)]">
+            <div className="col-span-2 flex flex-col items-center justify-center h-[calc(100vh-180px)]">
               <svg
                 width="60"
                 viewBox="0 0 80 87"

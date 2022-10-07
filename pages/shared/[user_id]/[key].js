@@ -8,7 +8,7 @@ import Image from "next/image";
 export default function Slug() {
   const router = useRouter();
   const { data } = useSWR(
-    router
+    router && router.query.user_id
       ? `/api/shared?user_id=${router.query.user_id}&key=${router.query.key}`
       : null
   );
@@ -34,7 +34,7 @@ export default function Slug() {
                 {data.user.first_name + " " + data.user.last_name}
               </div>
             </div>
-            <div className="whitespace-pre-wrap">{data.text}</div>
+            <div className="whitespace-pre-wrap">{data.text || "Запись не найдена"}</div>
           </>
         )}
       </Content>
