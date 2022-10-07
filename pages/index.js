@@ -63,7 +63,7 @@ export default function Home() {
           )}
           {content &&
             (content.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-[calc(100vh-180px)]">
+              <div className="col-span-2 flex flex-col items-center justify-center h-[calc(100vh-180px)]">
                 <svg
                   width="60"
                   viewBox="0 0 80 87"
