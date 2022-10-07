@@ -8,9 +8,9 @@ export default async function handler(req, res) {
   const keys = await vk.api.storage.getKeys();
 
   if (keys.length === 0) {
-    res.json({ newSlug: 0 });
+    res.json({ newSlug: "note-0" });
     return;
   }
 
-  res.json({ newSlug: Number(keys.at[-1]) + 1 });
+  res.json({ newSlug: `note-${Number(keys.at(-1).slice(5)) + 1}` });
 }

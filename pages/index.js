@@ -17,7 +17,7 @@ export default function Home() {
       </Head>
       <Content>
         <Header home />
-        <div className="divide-y divide-neutral-500">
+        <div className="grid sm:grid-cols-2 gap-2">
           {data && !data.isAuthorized && (
             <div className="flex flex-col items-center justify-center h-[calc(100vh-180px)]">
               <svg
@@ -62,7 +62,7 @@ export default function Home() {
             </div>
           )}
           {content &&
-            (content.content.length === 0 ? (
+            (content.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-[calc(100vh-180px)]">
                 <svg
                   width="60"
@@ -105,8 +105,8 @@ export default function Home() {
                 <div className="text-lg mt-4">Нет ни одной записи</div>
               </div>
             ) : (
-              content.content.map((note, i) => (
-                <Card key={i} href={`/${note.key}`} description={note.text} />
+              content.map((note, i) => (
+                <Card key={i} href={`/${note.key}`} text={note.value} />
               ))
             ))}
         </div>

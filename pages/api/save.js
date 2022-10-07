@@ -5,7 +5,9 @@ export default async function handler(req, res) {
     token: req.cookies.access_token,
   });
 
-  const text = (await vk.api.storage.get({ key: req.query.key }))[0].value;
+  const { key, value } = JSON.parse(req.body);
 
-  res.json({ text });
+  await vk.api.storage.set({ key: key, value });
+
+  res.end();
 }

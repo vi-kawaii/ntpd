@@ -16,8 +16,8 @@ export default async function handler(req, res) {
 
   for (const k of keys) {
     const text = await vk.api.storage.get({ key: k });
-    content.push({ text, key: k });
+    content.push(...text);
   }
 
-  res.json({ content });
+  res.json(content);
 }
