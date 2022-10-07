@@ -70,7 +70,7 @@ export default function Slug() {
         <title>ntpd</title>
       </Head>
       <Content>
-        <Header />
+        <Header slug />
         <div className="text-center text-neutral-500 mb-6">{count} / 4096</div>
         <TextareaAutosize
           autoFocus

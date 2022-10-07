@@ -1,14 +1,25 @@
 import { useEffect, useState } from "react";
-import { PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { PlusIcon, XMarkIcon, ShareIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import useSWR from "swr";
+import Cookies from "js-cookie";
+import { useRouter } from "next/router";
 
-export default function Header({ home }) {
+export default function Header({ home, slug }) {
   const [pathname, setPathname] = useState("");
   const { data } = useSWR("/api/auth");
   const { data: newSlug } = useSWR(
     home && data && data.isAuthorized ? "/api/new-slug" : null
   );
+  const router = useRouter();
+
+  function share() {
+    navigator.share({
+      url: `https://ntpd.vercel.app/shared/${Cookies.get("user_id")}/${
+        router.query.slug
+      }`,
+    });
+  }
 
   useEffect(() => {
     setPathname(location.pathname);
@@ -73,11 +84,16 @@ export default function Header({ home }) {
           )
         ))}
       {!home && (
-        <Link href="/">
-          <a>
-            <XMarkIcon className="w-6" />
-          </a>
-        </Link>
+        <div className="flex">
+          {slug && <button onClick={share} className="mr-4">
+            <ShareIcon className="w-6" />
+          </button>}
+          <Link href="/">
+            <a>
+              <XMarkIcon className="w-6" />
+            </a>
+          </Link>
+        </div>
       )}
     </div>
   );
