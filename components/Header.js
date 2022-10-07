@@ -1,9 +1,30 @@
-export default function Header() {
+import { useEffect, useState } from "react";
+import useSWR from "swr";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
+
+export default function Header({ home }) {
+  const [pathname, setPathname] = useState("");
+  const [newSlug, setNewSlug] = useState("");
+  const { data } = useSWR("/api/auth");
+  const { data: content } = useSWR(
+    data && data.isAuthorized ? "/api/content" : null
+  );
+
+  useEffect(() => {
+    setPathname(location.pathname);
+  }, []);
+
+  useEffect(() => {
+    if (content) {
+      setNewSlug(content.newSlug);
+    }
+  }, [content]);
+
   return (
-    <div className="bg-neutral-800 mb-2">
+    <div className="flex items-center justify-between mb-2 pt-2 pb-3">
       <svg
         width="40"
-        className="mx-auto pt-2 pb-3"
         viewBox="0 0 80 87"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -19,7 +40,7 @@ export default function Header() {
           height="11.9706"
           transform="rotate(45 16.4426 66.163)"
           stroke="#7270FF"
-          stroke-width="5"
+          strokeWidth="5"
         />
         <rect
           x="39.6345"
@@ -28,7 +49,7 @@ export default function Header() {
           height="11.9706"
           transform="rotate(45 39.6345 66.163)"
           stroke="#7270FF"
-          stroke-width="5"
+          strokeWidth="5"
         />
         <rect
           x="62.8264"
@@ -37,9 +58,30 @@ export default function Header() {
           height="11.9706"
           transform="rotate(45 62.8264 66.163)"
           stroke="#7270FF"
-          stroke-width="5"
+          strokeWidth="5"
         />
       </svg>
+      {data &&
+        (!data.isAuthorized ? (
+          <a
+            href={`//oauth.vk.com/authorize?client_id=51443585&display=page&response_type=token&scope=offline&v=5.131&redirect_uri=https://ntpd.vercel.app/callback&state=${pathname}`}
+            className="bg-blue-500 rounded-lg px-3 py-1"
+          >
+            Войти
+          </a>
+        ) : home ? (
+          <Link href={`/${newSlug}`}>
+            <a>
+              <PlusIcon className="w-6" />
+            </a>
+          </Link>
+        ) : (
+          <Link href="/">
+            <a>
+              <XMarkIcon className="w-6" />
+            </a>
+          </Link>
+        ))}
     </div>
   );
 }
