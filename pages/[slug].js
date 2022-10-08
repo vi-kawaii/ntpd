@@ -31,21 +31,27 @@ export default function Slug() {
             value: textRef.current,
           }),
         });
-        mutate(
-          "/api/content",
-          async (content) => {
-            if (textRef.current === "") {
-              return content.filter((c) => c.key !== slugRef.current);
-            }
+        mutate("/api/content", async (content) => {
+          if (textRef.current === "") {
+            return content.filter((c) => c.key !== slugRef.current);
+          }
 
-            return content.map((c) =>
-              c.key === slugRef.current
-                ? { key: c.key, value: textRef.current }
-                : c
-            );
-          },
-          { revalidate: false }
-        );
+          if (!content.find((c) => c.key === slugRef.current)) {
+            return [
+              ...content,
+              {
+                key: slugRef.current,
+                value: textRef.current,
+              },
+            ];
+          }
+
+          return content.map((c) =>
+            c.key === slugRef.current
+              ? { key: c.key, value: textRef.current }
+              : c
+          );
+        });
       }, 300),
     []
   );

@@ -2,13 +2,22 @@ import Head from "next/head";
 import Header from "../components/Header";
 import Card from "../components/Card";
 import Content from "../components/Content";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
+import { useEffect } from "react";
+import { useSWRConfig } from "swr";
 
 export default function Home() {
   const { data } = useSWR("/api/auth");
   const { data: content } = useSWR(
     data && data.isAuthorized ? "/api/content" : null
   );
+  const { mutate } = useSWRConfig();
+
+  useEffect(() => {
+    if (content) {
+      content.map((c) => mutate(`/api/note?key=${c.key}`, { text: c.value }));
+    }
+  }, [content]);
 
   return (
     <>
