@@ -89,8 +89,8 @@ export default function Header({ home, slug }) {
             <ShareIcon className="w-5" />
           </button>}
           <Link href="/">
-            <a>
-              <XMarkIcon className="w-6 ml-4" />
+            <a className="ml-4">
+              <XMarkIcon className="w-6" />
             </a>
           </Link>
         </div>

@@ -6,6 +6,7 @@ import Content from "../components/Content";
 import Head from "next/head";
 import _debounce from "lodash/debounce";
 import TextareaAutosize from "react-textarea-autosize";
+import { useSWRConfig } from "swr";
 
 export default function Slug() {
   const router = useRouter();
@@ -18,20 +19,34 @@ export default function Slug() {
   const slugRef = useRef();
   textRef.current = text;
   const [count, setCount] = useState(0);
+  const { mutate } = useSWRConfig();
 
   const debounceSave = useMemo(
     () =>
-      _debounce(
-        () =>
-          fetch("/api/save", {
-            method: "POST",
-            body: JSON.stringify({
-              key: slugRef.current,
-              value: textRef.current,
-            }),
+      _debounce(() => {
+        fetch("/api/save", {
+          method: "POST",
+          body: JSON.stringify({
+            key: slugRef.current,
+            value: textRef.current,
           }),
-        700
-      ),
+        });
+        mutate(
+          "/api/content",
+          async (content) => {
+            if (textRef.current === "") {
+              return content.filter((c) => c.key !== slugRef.current);
+            }
+
+            return content.map((c) =>
+              c.key === slugRef.current
+                ? { key: c.key, value: textRef.current }
+                : c
+            );
+          },
+          { revalidate: false }
+        );
+      }, 300),
     []
   );
 

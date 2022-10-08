@@ -7,11 +7,6 @@ export default async function handler(req, res) {
 
   const keys = await vk.api.storage.getKeys();
 
-  if (keys.length === 0) {
-    res.json([]);
-    return;
-  }
-
   let content = [];
 
   for (const k of keys) {
