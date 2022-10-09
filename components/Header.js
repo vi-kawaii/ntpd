@@ -26,14 +26,6 @@ export default function Header({ home, slug }) {
     setPathname(location.pathname);
   }, []);
 
-  useEffect(() => {
-    if (home && newSlug && newSlug.newSlug) {
-      keyboardjs.bind("e", () => {
-        router.push(`/${newSlug.newSlug}`);
-      });
-    }
-  }, [newSlug]);
-
   return (
     <div className="flex items-center justify-between mb-2 pt-2 pb-3">
       <svg
