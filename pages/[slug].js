@@ -32,6 +32,8 @@ export default function Slug() {
           }),
         });
         mutate("/api/content", async (content) => {
+          console.log(content);
+
           if (textRef.current === "") {
             return content.filter((c) => c.key !== slugRef.current);
           }
@@ -81,6 +83,12 @@ export default function Slug() {
     }
   }, [note]);
 
+  useEffect(() => {
+    mutate("/api/content", async () => {
+      return await (await fetch("/api/content")).json();
+    });
+  }, []);
+
   if (!data || !data.isAuthorized) {
     return null;
   }
@@ -92,14 +100,20 @@ export default function Slug() {
       </Head>
       <Content>
         <Header slug />
-        <div className="text-center text-neutral-500 mb-6">{count} / 4096</div>
-        <TextareaAutosize
-          autoFocus
-          placeholder="Напишите текст..."
-          className="outline-none bg-[#121212] w-full resize-none"
-          onChange={changeText}
-          value={text}
-        />
+        {note && note.text && (
+          <>
+            <div className="text-center text-neutral-500 mb-6">
+              {count} / 4096
+            </div>
+            <TextareaAutosize
+              autoFocus
+              placeholder="Напишите текст..."
+              className="outline-none bg-[#121212] w-full resize-none"
+              onChange={changeText}
+              value={text}
+            />
+          </>
+        )}
       </Content>
     </>
   );
