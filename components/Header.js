@@ -5,6 +5,7 @@ import useSWR from "swr";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import keyboardjs from "keyboardjs";
+import { useSWRConfig } from "swr";
 
 export default function Header({ home, slug }) {
   const [pathname, setPathname] = useState("");
@@ -13,6 +14,7 @@ export default function Header({ home, slug }) {
     home && data && data.isAuthorized ? "/api/new-slug" : null
   );
   const router = useRouter();
+  const { mutate } = useSWRConfig();
 
   function share() {
     navigator.share({
@@ -25,6 +27,12 @@ export default function Header({ home, slug }) {
   useEffect(() => {
     setPathname(location.pathname);
   }, []);
+
+  useEffect(() => {
+    if (newSlug) {
+      mutate(`/api/note?key=${newSlug.newSlug}`)
+    }
+  }, [newSlug])
 
   return (
     <div className="flex items-center justify-between mb-2 pt-2 pb-3">
