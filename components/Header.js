@@ -30,7 +30,7 @@ export default function Header({ home, slug }) {
 
   useEffect(() => {
     if (newSlug) {
-      mutate(`/api/note?key=${newSlug.newSlug}`, "")
+      mutate(`/api/note?key=${newSlug.newSlug}`, { text: "" })
     }
   }, [newSlug])
 
