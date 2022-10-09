@@ -4,6 +4,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import keyboardjs from "keyboardjs";
 
 export default function Header({ home, slug }) {
   const [pathname, setPathname] = useState("");
@@ -24,6 +25,14 @@ export default function Header({ home, slug }) {
   useEffect(() => {
     setPathname(location.pathname);
   }, []);
+
+  useEffect(() => {
+    if (home && newSlug && newSlug.newSlug) {
+      keyboardjs.bind("e", () => {
+        router.push(`/${newSlug.newSlug}`);
+      });
+    }
+  }, [newSlug]);
 
   return (
     <div className="flex items-center justify-between mb-2 pt-2 pb-3">
@@ -85,9 +94,11 @@ export default function Header({ home, slug }) {
         ))}
       {!home && (
         <div className="flex">
-          {slug && <button onClick={share}>
-            <ShareIcon className="w-5" />
-          </button>}
+          {slug && (
+            <button onClick={share}>
+              <ShareIcon className="w-5" />
+            </button>
+          )}
           <Link href="/">
             <a className="ml-4">
               <XMarkIcon className="w-6" />
