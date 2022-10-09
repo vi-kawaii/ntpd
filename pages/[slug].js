@@ -33,8 +33,6 @@ export default function Slug() {
           }),
         });
         mutate("/api/content", async (content) => {
-          console.log(content);
-
           if (textRef.current === "") {
             return content.filter((c) => c.key !== slugRef.current);
           }
