@@ -7,6 +7,7 @@ import Head from "next/head";
 import _debounce from "lodash/debounce";
 import TextareaAutosize from "react-textarea-autosize";
 import { useSWRConfig } from "swr";
+import keyboardjs from "keyboardjs";
 
 export default function Slug() {
   const router = useRouter();
@@ -87,6 +88,10 @@ export default function Slug() {
     mutate("/api/content", async () => {
       return await (await fetch("/api/content")).json();
     });
+
+    keyboardjs.bind("esc", () => {
+      router.push("/");
+    });
   }, []);
 
   if (!data || !data.isAuthorized) {
@@ -100,7 +105,7 @@ export default function Slug() {
       </Head>
       <Content>
         <Header slug />
-        {note && note.text && (
+        {note && (
           <>
             <div className="text-center text-neutral-500 mb-6">
               {count} / 4096
