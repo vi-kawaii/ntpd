@@ -1,100 +1,47 @@
-import { useRouter } from "next/router";
-import { useMemo, useEffect, useRef, useState } from "react";
-import useSWR from "swr";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Content from "../components/Content";
 import Head from "next/head";
-import _debounce from "lodash/debounce";
 import TextareaAutosize from "react-textarea-autosize";
-import { useSWRConfig } from "swr";
 import keyboardjs from "keyboardjs";
+import { useAtom } from "jotai";
+import notesAtom from "../notesAtom";
+import { useRouter } from "next/router";
 
 export default function Slug() {
+  const [notes, setNotes] = useAtom(notesAtom);
+  const [mount, setMount] = useState(false);
   const router = useRouter();
-  const { data } = useSWR("/api/auth");
-  const { data: note } = useSWR(
-    data && data.isAuthorized ? `/api/note?key=${router.query.slug}` : null
-  );
-  const [text, setText] = useState("");
-  const textRef = useRef();
-  const slugRef = useRef();
-  textRef.current = text;
-  const [count, setCount] = useState(0);
-  const { mutate } = useSWRConfig();
 
-  const debounceSave = useMemo(
-    () =>
-      _debounce(() => {
-        fetch("/api/save", {
-          method: "POST",
-          body: JSON.stringify({
-            key: slugRef.current,
-            value: textRef.current,
-          }),
-        });
-        mutate("/api/content", async (content) => {
-          if (textRef.current === "") {
-            return content.filter((c) => c.key !== slugRef.current);
-          }
-
-          if (!content.find((c) => c.key === slugRef.current)) {
-            return [
-              ...content,
-              {
-                key: slugRef.current,
-                value: textRef.current,
-              },
-            ];
-          }
-
-          return content.map((c) =>
-            c.key === slugRef.current
-              ? { key: c.key, value: textRef.current }
-              : c
-          );
-        });
-      }, 300),
-    []
-  );
-
-  function changeText({ target: { value } }) {
-    setText(value.length > 4096 ? value.slice(0, 4096) : value);
-    debounceSave();
+  function changeNotes({ target: { value } }) {
+    setNotes((n) =>
+      n.length === 0
+        ? [{ key: 0, value }]
+        : n.map((note) =>
+            note.key.toString() === location.pathname.slice(1)
+              ? { key: note.key, value }
+              : { key: note.key, value: note.value }
+          )
+    );
   }
 
   useEffect(() => {
-    slugRef.current = router.query.slug;
-  }, [router]);
+    if (!mount) {
+      setMount(true);
 
-  useEffect(() => {
-    setCount(text.length);
-  }, [text]);
+      if (!notes.find((n) => n.key.toString() === location.pathname.slice(1))) {
+        setNotes([...notes, { key: +location.pathname.slice(1), value: "" }]);
+      }
 
-  useEffect(() => {
-    if (data && !data.isAuthorized) {
-      router.push("/");
+      return;
     }
-  }, [data, router]);
+  }, [notes, mount, setNotes]);
 
   useEffect(() => {
-    if (note) {
-      setText(note.text);
-    }
-  }, [note]);
-
-  useEffect(() => {
-    mutate("/api/content", async () => {
-      return await (await fetch("/api/content")).json();
-    });
-
     keyboardjs.bind("esc", () => {
       router.push("/");
     });
-  }, []);
-
-  if (!data || !data.isAuthorized) {
-    return null;
-  }
+  }, [router]);
 
   return (
     <>
@@ -103,19 +50,19 @@ export default function Slug() {
       </Head>
       <Content>
         <Header slug />
-        {note && (
-          <>
-            <div className="text-center text-neutral-500 mb-6">
-              {count} / 4096
-            </div>
-            <TextareaAutosize
-              autoFocus
-              placeholder="Напишите текст..."
-              className="outline-none bg-[#121212] w-full resize-none"
-              onChange={changeText}
-              value={text}
-            />
-          </>
+        {mount && notes && (
+          <TextareaAutosize
+            placeholder="Напишите текст..."
+            className="outline-none bg-[#121212] w-full resize-none"
+            onChange={changeNotes}
+            value={
+              notes.find((n) => n.key.toString() === location.pathname.slice(1))
+                ? notes.find(
+                    (n) => n.key.toString() === location.pathname.slice(1)
+                  ).value
+                : ""
+            }
+          />
         )}
       </Content>
     </>

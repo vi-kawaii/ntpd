@@ -1,38 +1,26 @@
 import { useEffect, useState } from "react";
 import { PlusIcon, XMarkIcon, ShareIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
-import useSWR from "swr";
-import Cookies from "js-cookie";
-import { useRouter } from "next/router";
-import keyboardjs from "keyboardjs";
-import { useSWRConfig } from "swr";
+import { useAtom } from "jotai";
+import notesAtom from "../notesAtom";
 
 export default function Header({ home, slug }) {
-  const [pathname, setPathname] = useState("");
-  const { data } = useSWR("/api/auth");
-  const { data: newSlug } = useSWR(
-    home && data && data.isAuthorized ? "/api/new-slug" : null
-  );
-  const router = useRouter();
-  const { mutate } = useSWRConfig();
+  const [mount, setMount] = useState(false);
+  const [newUrl, setNewUrl] = useState("");
+  const [notes] = useAtom(notesAtom);
+
+  useEffect(() => {
+    setMount(true);
+    setNewUrl(notes.length !== 0 ? notes.at(-1).key + 1 : 0);
+  }, [notes]);
 
   function share() {
     navigator.share({
-      url: `https://ntpd.vercel.app/shared/${Cookies.get("user_id")}/${
-        router.query.slug
-      }`,
+      url: `https://ntpd.vercel.app/share/${encodeURIComponent(
+        notes.find((n) => n.key.toString() === location.pathname.slice(1)).value
+      )}`,
     });
   }
-
-  useEffect(() => {
-    setPathname(location.pathname);
-  }, []);
-
-  useEffect(() => {
-    if (newSlug) {
-      mutate(`/api/note?key=${newSlug.newSlug}`, { text: "" })
-    }
-  }, [newSlug])
 
   return (
     <div className="flex items-center justify-between mb-2 pt-2 pb-3">
@@ -74,38 +62,27 @@ export default function Header({ home, slug }) {
           strokeWidth="5"
         />
       </svg>
-      {data &&
-        (!data.isAuthorized ? (
-          <a
-            href={`//oauth.vk.com/authorize?client_id=51443585&display=page&response_type=token&scope=offline&v=5.131&redirect_uri=https://ntpd.vercel.app/callback&state=${pathname}`}
-            className="bg-blue-500 rounded-lg px-3 py-1 ml-auto"
-          >
-            Войти
-          </a>
-        ) : (
-          home &&
-          newSlug && (
-            <Link href={`/${newSlug.newSlug}`}>
-              <a>
-                <PlusIcon className="w-6" />
-              </a>
-            </Link>
-          )
-        ))}
-      {!home && (
-        <div className="flex">
-          {slug && (
-            <button onClick={share}>
-              <ShareIcon className="w-5" />
-            </button>
-          )}
-          <Link href="/">
-            <a className="ml-4">
-              <XMarkIcon className="w-6" />
+      {mount &&
+        (home ? (
+          <Link href={`/${newUrl}`}>
+            <a>
+              <PlusIcon className="w-6" />
             </a>
           </Link>
-        </div>
-      )}
+        ) : (
+          <div className="flex">
+            {slug && (
+              <button onClick={share}>
+                <ShareIcon className="w-5" />
+              </button>
+            )}
+            <Link href="/">
+              <a className="ml-4">
+                <XMarkIcon className="w-6" />
+              </a>
+            </Link>
+          </div>
+        ))}
     </div>
   );
 }
