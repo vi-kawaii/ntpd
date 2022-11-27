@@ -53,7 +53,7 @@ export default function Slug() {
         {mount && notes && (
           <TextareaAutosize
             placeholder="Напишите текст..."
-            className="outline-none bg-[#121212] w-full resize-none"
+            className="outline-none bg-transparent w-full resize-none"
             onChange={changeNotes}
             value={
               notes.find((n) => n.key.toString() === location.pathname.slice(1))
