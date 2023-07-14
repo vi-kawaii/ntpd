@@ -18,10 +18,10 @@ export default function Slug() {
       n.length === 0
         ? [{ key: 0, value }]
         : n.map((note) =>
-            note.key.toString() === location.pathname.slice(1)
-              ? { key: note.key, value }
-              : { key: note.key, value: note.value }
-          )
+          note.key.toString() === location.pathname.slice(1)
+            ? { key: note.key, value }
+            : { key: note.key, value: note.value }
+        )
     );
   }
 
@@ -38,7 +38,7 @@ export default function Slug() {
   }, [notes, mount, setNotes]);
 
   useEffect(() => {
-    keyboardjs.bind("esc", () => {
+    keyboardjs.bind(["esc", "shift + enter"], () => {
       router.push("/");
     });
   }, [router]);
@@ -52,14 +52,20 @@ export default function Slug() {
         <Header slug />
         {mount && notes && (
           <TextareaAutosize
+            autoFocus
             placeholder="Напишите текст..."
             className="outline-none bg-transparent w-full resize-none"
+            onFocus={(e) => {
+              let temp = e.target.value;
+              e.target.value = '';
+              e.target.value = temp;
+            }}
             onChange={changeNotes}
             value={
               notes.find((n) => n.key.toString() === location.pathname.slice(1))
                 ? notes.find(
-                    (n) => n.key.toString() === location.pathname.slice(1)
-                  ).value
+                  (n) => n.key.toString() === location.pathname.slice(1)
+                ).value
                 : ""
             }
           />
